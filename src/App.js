@@ -24,7 +24,24 @@ function App() {
   })
   const [location, setLocation] = useState(null);
   const [error, setError] = useState(null);
-
+  const fetchLocation = async () => {
+    if (!location) {
+      return;
+    }
+    const data = {
+      logitude: location.longitude,
+      latitude: location.latitude,
+    }
+    const response = await fetch('https://shave-hive-backend.vercel.app/location/getlocation', {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      }
+      , body: JSON.stringify(data)
+    })
+    const result = await response.json();
+    console.log(result);
+  }
   useEffect(() => {
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -33,6 +50,7 @@ function App() {
           const { latitude, longitude } = position.coords;
           setLocation({ latitude, longitude });
           console.log({ latitude, longitude })
+          
         },
         (error) => {
           
@@ -45,29 +63,7 @@ function App() {
     }
   }, []);
 
-  useEffect(() => {
-    const fetchLocation = async () => {
-      if (!location) {
-        return;
-      }
-      const data = {
-        logitude: location.longitude,
-        latitude: location.latitude,
-      }
-      const response = await fetch('https://shave-hive-backend.vercel.app/location/getlocation', {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json"
-        }
-        , body: JSON.stringify(data)
-      })
-      const result = await response.json();
-      console.log(result);
-    }
-    return () => {
-      fetchLocation();
-    }
-  }, [location])
+  fetchLocation()
 
   return (
     <div className="App">
